@@ -2,6 +2,7 @@
 // Change Player Name
 // Version: 1.0.0
 // Author: Hellcat92
+// Date: 27 December 2025
 // ================================================================
 
 using BepInEx;
