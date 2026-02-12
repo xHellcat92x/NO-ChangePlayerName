@@ -1,0 +1,47 @@
+// ================================================================
+// Change Player Name
+// Version: 1.0.0
+// Author: Hellcat92
+// ================================================================
+
+using BepInEx;
+using BepInEx.Configuration;
+using HarmonyLib;
+using Steamworks;
+
+namespace CustomNameMod
+{
+    [BepInPlugin("com.hellcat92.changeplayername", "Change Player Name", "1.0.0")]
+    public class CustomNamePlugin : BaseUnityPlugin
+    {
+        public static ConfigEntry<string> CustomName;
+
+        private void Awake()
+        {
+            // Config entry with unified naming + restart note
+            CustomName = Config.Bind(
+                "Restart Required*",
+                "Change Player Name",
+                "[F1] Change Player Name",
+                "Restart Required* — This name replaces your Steam profile name in‑game."
+            );
+
+            // Apply Harmony patches
+            Harmony harmony = new Harmony("com.hellcat92.changeplayername");
+            harmony.PatchAll();
+
+            Logger.LogInfo("Change Player Name mod loaded");
+        }
+    }
+
+    // Override SteamFriends.GetPersonaName everywhere
+    [HarmonyPatch(typeof(SteamFriends), nameof(SteamFriends.GetPersonaName))]
+    public class NamePatch
+    {
+        static bool Prefix(ref string __result)
+        {
+            __result = CustomNamePlugin.CustomName.Value;
+            return false;
+        }
+    }
+}
